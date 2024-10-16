@@ -46,7 +46,7 @@ class PomodoroApp(ctk.CTk):
         
         self.timer = ctk.CTkLabel(
             self,
-            text=self.current_focus_time+":00",  # Timer
+            text=self.current_focus_time+":00",
             font=("Helvetica", 30)
         )
         self.timer.grid(row=2, column=1, padx=10, pady=20)
@@ -230,12 +230,12 @@ class PomodoroApp(ctk.CTk):
         self.timer.configure(text=self.current_focus_time+":00")
 
     def start_timer(self):
-        self.current_focus_time_seconds = int(self.current_focus_time) * 60  # Odak zamanı saniyeye çevir
-        self.start_countdown(self.current_focus_time_seconds, "Focus")  # Geri sayımı başlat
+        self.current_focus_time_seconds = int(self.current_focus_time) * 60
+        self.start_countdown(self.current_focus_time_seconds, "Focus")
 
     def start_countdown(self, countdown_time, mode):
         def countdown():
-            nonlocal countdown_time  # countdown_time'ı dışarıdan kullanabilmek için nonlocal olarak işaretle
+            nonlocal countdown_time
             minutes, seconds = divmod(countdown_time, 60)
 
             time_format = f"{minutes:02}:{seconds:02}"
@@ -243,22 +243,15 @@ class PomodoroApp(ctk.CTk):
 
             if countdown_time > 0:
                 countdown_time -= 1
-                self.after(1000, countdown)  # 1 saniye sonra geri sayımı güncelle
+                self.after(1000, countdown)
             else:
                 if mode == "Focus":
-                    # Odak zamanı bittiğinde ara zamanına geç
                     self.timer.configure(text="Break Time!")
-                    self.after(1000, lambda: self.start_countdown(int(self.current_break_time) * 60, "Break"))  # Ara zamanı başlat
+                    self.after(1000, lambda: self.start_countdown(int(self.current_break_time) * 60, "Break"))
                 elif mode == "Break":
-                    # Ara zamanı bittiğinde odak zamanına geç
                     self.timer.configure(text="Focus Time!")
-                    self.after(1000, lambda: self.start_countdown(int(self.current_focus_time) * 60, "Focus"))  # Odak zamanı başlat
-
+                    self.after(1000, lambda: self.start_countdown(int(self.current_focus_time) * 60, "Focus"))
         countdown()
-
-
-
-
 
     def result_label_clear_message(self):
         self.result_label.configure(text="")
