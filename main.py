@@ -51,14 +51,25 @@ class PomodoroApp(ctk.CTk):
         )
         self.timer.grid(row=2, column=1, padx=10, pady=20)
 
+        self.button_frame = ctk.CTkFrame(self)
+        self.button_frame.grid(row=3, column=0, columnspan=2, padx=10, pady=20)
+
         self.start_timer_button = ctk.CTkButton(
-            self,
+            self.button_frame,
             text="Start Timer",
             command=self.start_timer,
             height=60
         )
-        self.start_timer_button.grid(row=3, column=1, padx=10, pady=20)
+        self.start_timer_button.grid(row=0, column=0, padx=10, pady=20)
 
+        self.restart_timer_button = ctk.CTkButton(
+            self.button_frame,
+            text="Restart Timer",
+            command=self.restart_timer,
+            height=60
+        )
+        self.restart_timer_button.grid(row=0, column=1, padx=10, pady=20)
+        
         self.bottom_frame = ctk.CTkFrame(self)
         self.bottom_frame.grid(row=4, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
 
@@ -126,7 +137,7 @@ class PomodoroApp(ctk.CTk):
         self.timer.grid(row=2, column=1, padx=10, pady=20)
         self.timer.configure(text=self.current_focus_time+":00")
 
-        self.start_timer_button.grid(row=3, column=1, padx=10, pady=20)
+        self.button_frame.grid(row=3, column=0, columnspan=3, padx=10, pady=20)
         self.bottom_frame.grid(row=4, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
 
     def settings_page(self):
@@ -199,7 +210,7 @@ class PomodoroApp(ctk.CTk):
             hover_color="#006400",
             height=60,
         )
-        self.apply_changes_button.grid(row=8, column=1, padx=10, pady=20)
+        self.apply_changes_button.grid(row=8, column=1, padx=10, pady=40)
 
         self.bottom_frame.grid(row=9, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
 
@@ -230,8 +241,19 @@ class PomodoroApp(ctk.CTk):
         self.timer.configure(text=self.current_focus_time+":00")
 
     def start_timer(self):
-        self.current_focus_time_seconds = int(self.current_focus_time) * 60
-        self.start_countdown(self.current_focus_time_seconds, "Focus")
+        if self.start_timer_button.cget("text") == "Stop Timer":
+            self.after_cancel(self.timer_id)
+            self.start_timer_button.configure(text="Continue Timer")
+            self.paused_time = self.current_focus_time_seconds
+        
+        elif self.start_timer_button.cget("text") == "Continue Timer":
+            self.start_countdown(self.paused_time, "Focus")
+            self.start_timer_button.configure(text="Stop Timer")
+        
+        else:
+            self.current_focus_time_seconds = int(self.current_focus_time) * 60
+            self.start_countdown(self.current_focus_time_seconds, "Focus")
+            self.start_timer_button.configure(text="Stop Timer")
 
     def start_countdown(self, countdown_time, mode):
         def countdown():
@@ -243,15 +265,26 @@ class PomodoroApp(ctk.CTk):
 
             if countdown_time > 0:
                 countdown_time -= 1
-                self.after(1000, countdown)
+                self.current_focus_time_seconds = countdown_time
+                self.timer_id = self.after(1000, countdown)
             else:
                 if mode == "Focus":
                     self.timer.configure(text="Break Time!")
-                    self.after(1000, lambda: self.start_countdown(int(self.current_break_time) * 60, "Break"))
+                    self.timer_id = self.after(1000, lambda: self.start_countdown(int(self.current_break_time) * 60, "Break"))
                 elif mode == "Break":
                     self.timer.configure(text="Focus Time!")
-                    self.after(1000, lambda: self.start_countdown(int(self.current_focus_time) * 60, "Focus"))
+                    self.timer_id = self.after(1000, lambda: self.start_countdown(int(self.current_focus_time) * 60, "Focus"))
+        
         countdown()
+
+    def restart_timer(self):
+        if self.start_timer_button.cget("text") == "Continue Timer":
+            self.timer.configure(text=self.current_focus_time+":00")
+            self.start_timer_button.configure(text="Start Timer")
+        else:
+            self.restart_timer_button.configure(text="Stop the timer first!")
+            self.restart_timer_button.after(1000, lambda: self.restart_timer_button.configure(text="Restart Timer"))
+            print("Stop the timer first")
 
     def result_label_clear_message(self):
         self.result_label.configure(text="")
