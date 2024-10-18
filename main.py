@@ -11,6 +11,8 @@ class PomodoroApp(ctk.CTk):
 
         ctk.set_default_color_theme("dark-blue")
 
+        self.current_theme = "dark"
+
         self.title("Pomodoro")
         self.geometry("1000x800")
 
@@ -135,6 +137,7 @@ class PomodoroApp(ctk.CTk):
         for widget in self.winfo_children():
             if widget != self.bottom_frame:
                 widget.grid_forget()
+                widget.place_forget()
 
         self.homepage_header_label.grid(row=0, column=1, padx=10, pady=20)
         self.tomato_label.grid(row=1, column=1, padx=10, pady=20)
@@ -149,6 +152,7 @@ class PomodoroApp(ctk.CTk):
         for widget in self.winfo_children():
             if widget != self.bottom_frame:
                 widget.grid_forget()
+                widget.place_forget()
 
         self.homepage_header_label.grid(row=0, column=1, padx=10, pady=20)
 
@@ -169,14 +173,65 @@ class PomodoroApp(ctk.CTk):
         )
         self.session_history_button.grid(row=2, column=1, padx=10, pady=20)
 
+        self.weekly_report_button = ctk.CTkButton(
+            self,
+            text="Weekly Report",
+            command=lambda: self.previous_reports_page("Weekly"),
+            fg_color="#B8860B",
+            height=60
+        )
+        self.weekly_report_button.grid(row=3, column=1, padx=10, pady=20)
+
+        self.monthly_report_button = ctk.CTkButton(
+            self,
+            text="Monthly Report",
+            command=lambda: self.previous_reports_page("Monthly"),
+            fg_color="#B8860B",
+            height=60
+        )
+        self.monthly_report_button.grid(row=4, column=1, padx=10, pady=20)
+
+        self.bottom_frame.grid(row=5, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
+
     def session_history_page(self):
         for widget in self.winfo_children():
             if widget != self.bottom_frame:
                 widget.grid_forget()
+                widget.place_forget()
 
         self.homepage_header_label.grid(row=0, column=1, padx=10, pady=20)
 
-        self.session_history__go_back_button = ctk.CTkButton(
+        with open("data/history.txt", "r") as file:
+            lines = file.readlines()
+
+            if lines:
+                self.records = []
+
+                self.records_frame = ctk.CTkFrame(self)
+                self.records_frame.grid(row=1, column=1, padx=10, pady=10)
+
+                for i, record in enumerate(lines, start=1):
+                    parts = record.split(", ")
+
+                    data = {}
+                    for part in parts:
+                        key, value = part.split(": ")
+                        data[key.strip()] = value.strip()
+
+                    formatted_record = f"Date: {data['Date']}, Start Time: {data['Start Time']}, End Time: {data['End Time']}, Focus Time (in minutes): {data['Focus Time (in minutes)']}"
+
+                    record_label = ctk.CTkLabel(
+                        self.records_frame,
+                        text=formatted_record,
+                        # font=("Helvetica", 20)
+                    )
+                    record_label.grid(row=i, column=1, padx=10, pady=5, sticky="w")
+                    self.records.append(record_label)
+
+            else:
+                print("No tasks available")
+
+        self.session_history_go_back_button = ctk.CTkButton(
             self,
             text="Go Back",
             command=self.analysis_page,
@@ -184,14 +239,44 @@ class PomodoroApp(ctk.CTk):
             # hover_color="#B8860B",
             height=60,
         )
-        self.session_history__go_back_button.grid(row=1, column=1, padx=10, pady=20)
+        self.session_history_go_back_button.grid(row=len(self.records) + 1, column=1, padx=10, pady=20)
+
+    def previous_reports_page(self, report_type):
+        for widget in self.winfo_children():
+            if widget != self.bottom_frame:
+                widget.grid_forget()
+                widget.place_forget()
+
+        self.homepage_header_label.grid(row=0, column=1, padx=10, pady=20)
+
+        self.session_history_go_back_button = ctk.CTkButton(
+            self,
+            text="Go Back",
+            command=self.analysis_page,
+            fg_color="red",
+            # hover_color="#B8860B",
+            height=60,
+        )
+        self.session_history_go_back_button.grid(row=1, column=1, padx=10, pady=20)
 
     def settings_page(self):
         for widget in self.winfo_children():
             if widget != self.bottom_frame:
                 widget.grid_forget()
+                widget.place_forget()
 
         self.homepage_header_label.grid(row=0, column=1, padx=10, pady=20)
+
+        self.switch_theme_button = ctk.CTkButton(
+            self,
+            text="Switch Theme",
+            command=self.switch_theme,
+            fg_color="green",
+            hover_color="#006400",
+            height=60,
+            width=60
+        )
+        self.switch_theme_button.place(x=100, y=100)
 
         self.focus_time_label = ctk.CTkLabel(
             self,
@@ -263,6 +348,14 @@ class PomodoroApp(ctk.CTk):
 
         self.bottom_frame.grid(row=9, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
 
+    def switch_theme(self):
+        if self.current_theme == "dark":
+            ctk.set_appearance_mode("light")
+            self.current_theme = "light"
+        else:
+            ctk.set_appearance_mode("dark")
+            self.current_theme = "dark"
+
     def apply_changes(self):
         try:
             focus_time = int(self.focus_time_entry.get())
@@ -322,7 +415,7 @@ class PomodoroApp(ctk.CTk):
                 self.current_focus_time_seconds = countdown_time
                 self.timer_id = self.after(1000, countdown)
             else:
-                playsound("sounds/alarm.mp3") # Need to fix
+                # playsound("sounds/alarm.mp3") # Need to fix
                 if mode == "Focus":
                     self.pomodoro_session_counter += 1
 
@@ -333,11 +426,24 @@ class PomodoroApp(ctk.CTk):
 
                     with open("data/history.txt", "a+") as file:
                         date = now.strftime("%d-%m-%Y")
+
+                        day_name_tr_to_eng = {
+                            "Pazartesi": "Monday",
+                            "Salı": "Tuesday",
+                            "Çarşamba": "Wednesday",
+                            "Perşembe": "Thursday",
+                            "Cuma": "Friday",
+                            "Cumartesi": "Saturday",
+                            "Pazar": "Sunday"
+                        }
+
+                        day = now.strftime("%A")
+                        #day_en = day_name_tr_to_eng[day]
                         
                         start_time = now.strftime("%H:%M:%S")
                         end_time = (now + timedelta(minutes=int(self.current_focus_time))).strftime("%H:%M:%S")
                         
-                        file.write(f"Date: {date}, Start Time: {start_time}, End Time: {end_time}, Focus Time (in minutes): {self.current_focus_time}, Break Time (in minutes): {self.current_break_time}\n")
+                        file.write(f"Date: {date}, Day: {day}, Start Time: {start_time}, End Time: {end_time}, Focus Time (in minutes): {self.current_focus_time}, Break Time (in minutes): {self.current_break_time}\n")
 
                     self.homepage_header_label.configure(text="Take a Break!")
                     self.timer.configure(text="Break Time!")
