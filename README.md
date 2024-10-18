@@ -1,6 +1,6 @@
-### POMODORO TIMER
+# POMODORO TIMER
 
-A simple Pomodoro Timer built with Python and tkinter. It helps manage work and break intervals using the Pomodoro Technique.
+A simple Pomodoro Timer built with Python and customtkinter. It helps manage work and break intervals using the Pomodoro Technique.
 
 Features
 * Customizable focus and break durations
