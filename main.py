@@ -21,7 +21,9 @@ class PomodoroApp(ctk.CTk):
         self.current_break_time = "5"
         self.pomodoro_session_counter = 0 
         self.pomodoro_session = 0
-        self.pomodoro_cycle = 0
+        self.pomodoro_cycle = 4 # Default
+        self.pomodoro_interval_time = "30" # Default
+        self.current_label = "Work"
 
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         self.tomato_icon_path = os.path.join(BASE_DIR, "icons/tomato_icon.png")
@@ -39,6 +41,21 @@ class PomodoroApp(ctk.CTk):
             font=("Helvetica", 40)
         )
         self.homepage_header_label.grid(row=0, column=1, padx=10, pady=20)
+
+        self.label_combobox_label = ctk.CTkLabel(
+            self,
+            text="Label",
+            font=("Helvetica", 14)
+        )
+        self.label_combobox_label.place(x=120, y=70)
+
+        self.label_combobox = ctk.CTkComboBox(
+            self,
+            values=["Work", "Study", "Read"],
+            width=100
+        )
+        self.label_combobox.set("Work")
+        self.label_combobox.place(x=100, y=100)
 
         tomato_image = ctk.CTkImage(
             light_image=Image.open(self.tomato_icon_path),
@@ -140,6 +157,10 @@ class PomodoroApp(ctk.CTk):
                 widget.place_forget()
 
         self.homepage_header_label.grid(row=0, column=1, padx=10, pady=20)
+        
+        self.label_combobox_label.place(x=120, y=70)
+        self.label_combobox.place(x=100, y=100)
+
         self.tomato_label.grid(row=1, column=1, padx=10, pady=20)
 
         self.timer.grid(row=2, column=1, padx=10, pady=20)
@@ -201,14 +222,39 @@ class PomodoroApp(ctk.CTk):
 
         self.homepage_header_label.grid(row=0, column=1, padx=10, pady=20)
 
+        self.session_history_result_label = ctk.CTkLabel(
+            self,
+            text="No Tasks Available...",
+            font=("Helvetica", 20),
+            text_color="red"
+        )
+
         with open("data/history.txt", "r") as file:
             lines = file.readlines()
 
             if lines:
                 self.records = []
 
-                self.records_frame = ctk.CTkFrame(self)
-                self.records_frame.grid(row=1, column=1, padx=10, pady=10)
+                self.records_frame = ctk.CTkScrollableFrame(self, width=700, height=400)
+                self.records_frame.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
+
+                for i in range(5):
+                    self.records_frame.grid_columnconfigure(i, weight=1)
+
+                record_date_header = ctk.CTkLabel(self.records_frame, text="Date")
+                record_date_header.grid(row=0, column=0, padx=10, pady=5)
+
+                record_start_header = ctk.CTkLabel(self.records_frame, text="Start Time")
+                record_start_header.grid(row=0, column=1, padx=10, pady=5)
+
+                record_end_header = ctk.CTkLabel(self.records_frame, text="End Time")
+                record_end_header.grid(row=0, column=2, padx=10, pady=5)
+
+                record_focus_header = ctk.CTkLabel(self.records_frame, text="Focus Time")
+                record_focus_header.grid(row=0, column=3, padx=10, pady=5)
+
+                record_label_header = ctk.CTkLabel(self.records_frame, text="Label")
+                record_label_header.grid(row=0, column=4, padx=10, pady=5)
 
                 for i, record in enumerate(lines, start=1):
                     parts = record.split(", ")
@@ -218,28 +264,56 @@ class PomodoroApp(ctk.CTk):
                         key, value = part.split(": ")
                         data[key.strip()] = value.strip()
 
-                    formatted_record = f"Date: {data['Date']}, Start Time: {data['Start Time']}, End Time: {data['End Time']}, Focus Time (in minutes): {data['Focus Time (in minutes)']}"
-
-                    record_label = ctk.CTkLabel(
+                    date_label = ctk.CTkLabel(
                         self.records_frame,
-                        text=formatted_record,
-                        # font=("Helvetica", 20)
+                        text=data['Date']
                     )
-                    record_label.grid(row=i, column=1, padx=10, pady=5, sticky="w")
-                    self.records.append(record_label)
+                    date_label.grid(row=i, column=0, padx=10, pady=5)
 
+                    start_time_label = ctk.CTkLabel(
+                        self.records_frame,
+                        text=data['Start Time']
+                    )
+                    start_time_label.grid(row=i, column=1, padx=10, pady=5)
+
+                    end_time_label = ctk.CTkLabel(
+                        self.records_frame,
+                        text=data['End Time']
+                    )
+                    end_time_label.grid(row=i, column=2, padx=10, pady=5)
+
+                    focus_time_label = ctk.CTkLabel(
+                        self.records_frame,
+                        text=data['Focus Time (in minutes)']
+                    )
+                    focus_time_label.grid(row=i, column=3, padx=10, pady=5)
+
+                    label_label = ctk.CTkLabel(
+                        self.records_frame,
+                        text=data['Label']
+                    )
+                    label_label.grid(row=i, column=4, padx=10, pady=5)
+
+                    self.records.append(date_label)
+                    self.records.append(start_time_label)
+                    self.records.append(end_time_label)
+                    self.records.append(focus_time_label)
+                    self.records.append(label_label)
+            
             else:
-                print("No tasks available")
+                self.records = []
+                self.session_history_result_label.grid(row=1, column=1, padx=10, pady=5)
 
         self.session_history_go_back_button = ctk.CTkButton(
             self,
             text="Go Back",
             command=self.analysis_page,
             fg_color="red",
-            # hover_color="#B8860B",
             height=60,
         )
-        self.session_history_go_back_button.grid(row=len(self.records) + 1, column=1, padx=10, pady=20)
+        self.session_history_go_back_button.grid(row=len(self.records) // 5 + 2, column=1, padx=10, pady=20)
+
+        self.bottom_frame.grid(row=len(self.records) // 5 + 3, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
 
     def previous_reports_page(self, report_type):
         for widget in self.winfo_children():
@@ -327,14 +401,31 @@ class PomodoroApp(ctk.CTk):
             border_width=1,
             corner_radius=10
         )
-        self.pomodoro_cycle_entry.grid(row=6, column=1, padx=10, pady=(20, 37))
+        self.pomodoro_cycle_entry.grid(row=6, column=1, padx=10, pady=(20, 0))
+
+        self.pomodoro_interval_time_label = ctk.CTkLabel(
+            self,
+            text="Break Between Pomodoros",
+            font=("Helvetica", 20)
+        )
+        self.pomodoro_interval_time_label.grid(row=7, column=1, padx=10, pady=(40, 0))
+
+        self.pomodoro_interval_time_entry = ctk.CTkEntry(
+            self,
+            placeholder_text="5 - 60 Minutes",
+            width=200,
+            height=30,
+            border_width=1,
+            corner_radius=10
+        )
+        self.pomodoro_interval_time_entry.grid(row=8, column=1, padx=10, pady=(20, 1))
 
         self.result_label = ctk.CTkLabel(
             self,
             text="",
             font=("Helvetica", 20)
         )
-        self.result_label.grid(row=7, column=1, padx=10, pady=33)
+        self.result_label.grid(row=9, column=1, padx=10, pady=22.5)
 
         self.apply_changes_button = ctk.CTkButton(
             self,
@@ -344,9 +435,9 @@ class PomodoroApp(ctk.CTk):
             hover_color="#006400",
             height=60,
         )
-        self.apply_changes_button.grid(row=8, column=1, padx=10, pady=40)
+        self.apply_changes_button.grid(row=10, column=1, padx=10, pady=9.4)
 
-        self.bottom_frame.grid(row=9, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
+        self.bottom_frame.grid(row=11, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
 
     def switch_theme(self):
         if self.current_theme == "dark":
@@ -361,12 +452,14 @@ class PomodoroApp(ctk.CTk):
             focus_time = int(self.focus_time_entry.get())
             break_time = int(self.break_time_entry.get())
             cycle = int(self.pomodoro_cycle_entry.get())
+            time_betw_pomodoros = int(self.pomodoro_interval_time_entry.get())
 
             self.pomodoro_session = cycle
 
-            if focus_time >= 1 and focus_time <= 120 and break_time >= 1 and break_time <= 30 and cycle >= 1 and cycle <=8: # Change later
+            if focus_time >= 1 and focus_time <= 120 and break_time >= 1 and break_time <= 30 and cycle >= 1 and cycle <=8 and time_betw_pomodoros >= 1 and time_betw_pomodoros <= 60: # Change later
                 self.current_focus_time = str(focus_time)
                 self.current_break_time = str(break_time)
+                self.pomodoro_interval_time = str(time_betw_pomodoros)
 
                 self.result_label.configure(text="Changes Saved!", text_color="green")
 
@@ -383,20 +476,32 @@ class PomodoroApp(ctk.CTk):
         self.focus_time_entry.delete(0, END)
         self.break_time_entry.delete(0, END)
         self.pomodoro_cycle_entry.delete(0, END)
+        self.pomodoro_interval_time_entry.delete(0, END)
         
         self.timer.configure(text=self.current_focus_time+":00")
 
     def start_timer(self):
         if self.start_timer_button.cget("text") == "Stop Timer":
+            self.label_combobox_label.configure(text="Label")
+            self.label_combobox.place(x=100, y=100)
+
             self.after_cancel(self.timer_id)
             self.start_timer_button.configure(text="Continue Timer")
             self.paused_time = self.current_focus_time_seconds
         
         elif self.start_timer_button.cget("text") == "Continue Timer":
+            self.current_label = self.label_combobox.get()
+            self.label_combobox_label.configure(text=self.current_label)
+            self.label_combobox.place_forget()
+
             self.start_countdown(self.paused_time, "Focus")
             self.start_timer_button.configure(text="Stop Timer")
         
         else:
+            self.current_label = self.label_combobox.get()
+            self.label_combobox_label.configure(text=self.current_label)
+            self.label_combobox.place_forget()
+
             self.homepage_header_label.configure(text="Focus!")
             self.current_focus_time_seconds = int(self.current_focus_time) * 60
             self.start_countdown(self.current_focus_time_seconds, "Focus")
@@ -406,6 +511,8 @@ class PomodoroApp(ctk.CTk):
         def countdown():
             nonlocal countdown_time
             minutes, seconds = divmod(countdown_time, 60)
+
+            temp_break_time = self.current_break_time
 
             time_format = f"{minutes:02}:{seconds:02}"
             self.timer.configure(text=time_format)
@@ -419,33 +526,27 @@ class PomodoroApp(ctk.CTk):
                 if mode == "Focus":
                     self.pomodoro_session_counter += 1
 
-                    if self.pomodoro_session_counter % 4 == 0:
-                        self.pomodoro_cycle += 1
-
                     now = datetime.now()
 
                     with open("data/history.txt", "a+") as file:
                         date = now.strftime("%d-%m-%Y")
 
-                        day_name_tr_to_eng = {
-                            "Pazartesi": "Monday",
-                            "Salı": "Tuesday",
-                            "Çarşamba": "Wednesday",
-                            "Perşembe": "Thursday",
-                            "Cuma": "Friday",
-                            "Cumartesi": "Saturday",
-                            "Pazar": "Sunday"
-                        }
-
                         day = now.strftime("%A")
-                        #day_en = day_name_tr_to_eng[day]
                         
                         start_time = now.strftime("%H:%M:%S")
                         end_time = (now + timedelta(minutes=int(self.current_focus_time))).strftime("%H:%M:%S")
                         
-                        file.write(f"Date: {date}, Day: {day}, Start Time: {start_time}, End Time: {end_time}, Focus Time (in minutes): {self.current_focus_time}, Break Time (in minutes): {self.current_break_time}\n")
+                        file.write(f"Date: {date}, Day: {day}, Start Time: {start_time}, End Time: {end_time}, Focus Time (in minutes): {self.current_focus_time}, Break Time (in minutes): {self.current_break_time}, Label: {self.current_label}\n")
 
-                    self.homepage_header_label.configure(text="Take a Break!")
+                    if self.pomodoro_session_counter % int(self.pomodoro_interval_time) == 0:
+                        self.homepage_header_label.configure(text="Pomodoro Completed!")
+                        self.current_break_time = self.pomodoro_interval_time
+                        self.pomodoro_cycle += 1
+
+                    else:
+                        self.current_break_time = temp_break_time
+                        self.homepage_header_label.configure(text="Take a Break!")
+
                     self.timer.configure(text="Break Time!")
                     self.timer_id = self.after(1000, lambda: self.start_countdown(int(self.current_break_time) * 60, "Break"))
                     
@@ -461,6 +562,8 @@ class PomodoroApp(ctk.CTk):
             self.timer.configure(text=self.current_focus_time+":00")
             self.start_timer_button.configure(text="Start Timer")
             self.homepage_header_label.configure(text="Pomodoro")
+
+            #self.label_combobox.place(x=100, y=100)
         else:
             self.restart_timer_button.configure(text="Stop the timer first!")
             self.restart_timer_button.after(1000, lambda: self.restart_timer_button.configure(text="Restart Timer"))

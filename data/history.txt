@@ -1,0 +1,12 @@
+Date: 19-10-2024, Day: Saturday, Start Time: 14:02:15, End Time: 14:03:15, Focus Time (in minutes): 1, Break Time (in minutes): 1, Label: Study
+Date: 19-10-2024, Day: Saturday, Start Time: 14:04:18, End Time: 14:05:18, Focus Time (in minutes): 1, Break Time (in minutes): 1, Label: Study
+Date: 19-10-2024, Day: Saturday, Start Time: 14:06:20, End Time: 14:07:20, Focus Time (in minutes): 1, Break Time (in minutes): 1, Label: Study
+Date: 19-10-2024, Day: Saturday, Start Time: 14:16:02, End Time: 14:17:02, Focus Time (in minutes): 1, Break Time (in minutes): 1, Label: Study
+Date: 19-10-2024, Day: Saturday, Start Time: 14:17:13, End Time: 14:18:13, Focus Time (in minutes): 1, Break Time (in minutes): 1, Label: Read
+Date: 19-10-2024, Day: Saturday, Start Time: 15:38:21, End Time: 15:39:21, Focus Time (in minutes): 1, Break Time (in minutes): 2, Label: Work
+Date: 19-10-2024, Day: Saturday, Start Time: 15:40:45, End Time: 15:41:45, Focus Time (in minutes): 1, Break Time (in minutes): 2, Label: Work
+Date: 19-10-2024, Day: Saturday, Start Time: 15:43:38, End Time: 15:44:38, Focus Time (in minutes): 1, Break Time (in minutes): 1, Label: Work
+Date: 19-10-2024, Day: Saturday, Start Time: 15:45:41, End Time: 15:46:41, Focus Time (in minutes): 1, Break Time (in minutes): 2, Label: Work
+Date: 19-10-2024, Day: Saturday, Start Time: 15:50:29, End Time: 15:51:29, Focus Time (in minutes): 1, Break Time (in minutes): 2, Label: Work
+Date: 19-10-2024, Day: Saturday, Start Time: 15:55:31, End Time: 15:56:31, Focus Time (in minutes): 1, Break Time (in minutes): 1, Label: Work
+Date: 19-10-2024, Day: Saturday, Start Time: 15:57:34, End Time: 15:58:34, Focus Time (in minutes): 1, Break Time (in minutes): 1, Label: Work
