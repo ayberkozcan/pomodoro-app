@@ -1,9 +1,11 @@
+import os
+from datetime import datetime, timedelta
+import random
+
 from tkinter import *
 import customtkinter as ctk
-import os
 from PIL import Image
 from playsound import playsound
-from datetime import datetime, timedelta
 
 class PomodoroApp(ctk.CTk):
     def __init__(self):
@@ -56,6 +58,14 @@ class PomodoroApp(ctk.CTk):
         )
         self.label_combobox.set("Work")
         self.label_combobox.place(x=100, y=100)
+
+        self.quote_label = ctk.CTkLabel(
+            self,
+            text="",
+            font=("Helvetica", 25),
+            wraplength=200,
+        )
+        self.quote_label.place(x=100, y=350)
 
         tomato_image = ctk.CTkImage(
             light_image=Image.open(self.tomato_icon_path),
@@ -160,6 +170,10 @@ class PomodoroApp(ctk.CTk):
         
         self.label_combobox_label.place(x=120, y=70)
         self.label_combobox.place(x=100, y=100)
+
+        # self.quote_label.configure(text=self.random_quote())
+        # self.quote_label.after(10000, lambda: self.quote_label.configure(text=""))
+        self.quote_label.place(x=50, y=350)
 
         self.tomato_label.grid(row=1, column=1, padx=10, pady=20)
 
@@ -498,6 +512,9 @@ class PomodoroApp(ctk.CTk):
             self.start_timer_button.configure(text="Stop Timer")
         
         else:
+            self.quote_label.configure(text=self.random_quote())
+            self.quote_label.after(10000, lambda: self.quote_label.configure(text=""))
+
             self.current_label = self.label_combobox.get()
             self.label_combobox_label.configure(text=self.current_label)
             self.label_combobox.place_forget()
@@ -522,7 +539,7 @@ class PomodoroApp(ctk.CTk):
                 self.current_focus_time_seconds = countdown_time
                 self.timer_id = self.after(1000, countdown)
             else:
-                # playsound("sounds/alarm.mp3") # Need to fix
+                playsound("sounds/alarm.wav")
                 if mode == "Focus":
                     self.pomodoro_session_counter += 1
 
@@ -551,9 +568,12 @@ class PomodoroApp(ctk.CTk):
                     self.timer_id = self.after(1000, lambda: self.start_countdown(int(self.current_break_time) * 60, "Break"))
                     
                 elif mode == "Break":
-                    self.homepage_header_label.configure(text="Focus!") # Check that later
+                    self.homepage_header_label.configure(text="Focus!")
                     self.timer.configure(text="Focus Time!")
                     self.timer_id = self.after(1000, lambda: self.start_countdown(int(self.current_focus_time) * 60, "Focus"))
+
+                    self.quote_label.configure(text=self.random_quote())
+                    self.quote_label.after(10000, lambda: self.quote_label.configure(text=""))
         
         countdown()
 
@@ -570,6 +590,14 @@ class PomodoroApp(ctk.CTk):
 
     def result_label_clear_message(self):
         self.result_label.configure(text="")
+
+    def random_quote(self):
+        with open("quotes/quotes.txt", "r") as file:
+            lines = file.readlines()
+
+        random_quote = random.choice(lines).strip()
+
+        return random_quote
 
 if __name__ ==  "__main__":
     app = PomodoroApp()

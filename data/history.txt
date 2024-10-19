@@ -10,3 +10,5 @@ Date: 19-10-2024, Day: Saturday, Start Time: 15:45:41, End Time: 15:46:41, Focus
 Date: 19-10-2024, Day: Saturday, Start Time: 15:50:29, End Time: 15:51:29, Focus Time (in minutes): 1, Break Time (in minutes): 2, Label: Work
 Date: 19-10-2024, Day: Saturday, Start Time: 15:55:31, End Time: 15:56:31, Focus Time (in minutes): 1, Break Time (in minutes): 1, Label: Work
 Date: 19-10-2024, Day: Saturday, Start Time: 15:57:34, End Time: 15:58:34, Focus Time (in minutes): 1, Break Time (in minutes): 1, Label: Work
+Date: 19-10-2024, Day: Saturday, Start Time: 17:03:46, End Time: 17:04:46, Focus Time (in minutes): 1, Break Time (in minutes): 1, Label: Work
+Date: 19-10-2024, Day: Saturday, Start Time: 17:23:59, End Time: 17:24:59, Focus Time (in minutes): 1, Break Time (in minutes): 1, Label: Work
