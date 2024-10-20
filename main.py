@@ -27,6 +27,8 @@ class PomodoroApp(ctk.CTk):
         self.pomodoro_interval_time = "30" # Default
         self.current_label = "Work"
 
+        self.previous_settings()
+
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         self.tomato_icon_path = os.path.join(BASE_DIR, "icons/tomato_icon.png")
         self.homepage_icon_path = os.path.join(BASE_DIR, "icons/homepage_icon.png")
@@ -35,6 +37,20 @@ class PomodoroApp(ctk.CTk):
         
         self.widgets()
         self.homepage_page()
+
+    def previous_settings(self):
+        with open("data/settings.txt", "r") as file:
+            for line in file:
+                key, value = line.strip().split(": ")
+                
+                if key == "Focus Time":
+                    self.current_focus_time = value
+                elif key == "Break Time":
+                    self.current_break_time = value
+                elif key == "Pomodoro Cycle":
+                    self.pomodoro_cycle = value
+                elif key == "Time Between Pomodoros":
+                    self.pomodoro_interval_time = value
 
     def widgets(self):
         self.homepage_header_label = ctk.CTkLabel(
@@ -168,6 +184,13 @@ class PomodoroApp(ctk.CTk):
 
         self.homepage_header_label.grid(row=0, column=1, padx=10, pady=20)
         
+        # if self.homepage_header_label.cget("text") != "Focus!": 
+        #     self.label_combobox_label.place(x=120, y=70)
+        #     self.label_combobox.place(x=100, y=100)
+
+        # else:
+        #     self.label_combobox_label.place(x=120, y=70)
+
         self.label_combobox_label.place(x=120, y=70)
         self.label_combobox.place(x=100, y=100)
 
@@ -474,6 +497,9 @@ class PomodoroApp(ctk.CTk):
                 self.current_focus_time = str(focus_time)
                 self.current_break_time = str(break_time)
                 self.pomodoro_interval_time = str(time_betw_pomodoros)
+
+                with open("data/settings.txt", "w") as file:
+                    file.write(f"Focus Time: {self.current_focus_time}\nBreak Time: {self.current_break_time}\nPomodoro Cycle: {cycle}\nTime Between Pomodoros: {self.pomodoro_interval_time}")
 
                 self.result_label.configure(text="Changes Saved!", text_color="green")
 

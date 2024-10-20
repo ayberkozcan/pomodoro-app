@@ -1,0 +1,4 @@
+Focus Time: 25
+Break Time: 5
+Pomodoro Cycle: 4
+Time Between Pomodoros: 30
