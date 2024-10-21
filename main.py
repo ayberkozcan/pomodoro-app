@@ -34,6 +34,7 @@ class PomodoroApp(ctk.CTk):
         self.homepage_icon_path = os.path.join(BASE_DIR, "icons/homepage_icon.png")
         self.analysis_icon_path = os.path.join(BASE_DIR, "icons/analysis_icon.png")
         self.settings_icon_path = os.path.join(BASE_DIR, "icons/settings_icon.png")
+        self.theme_icon_path = os.path.join(BASE_DIR, "icons/theme_icon.png")
         
         self.widgets()
         self.homepage_page()
@@ -378,12 +379,14 @@ class PomodoroApp(ctk.CTk):
 
         self.homepage_header_label.grid(row=0, column=1, padx=10, pady=20)
 
+        theme_icon = PhotoImage(file=self.theme_icon_path)
+        theme_icon = theme_icon.subsample(10, 10)
+
         self.switch_theme_button = ctk.CTkButton(
             self,
-            text="Switch Theme",
+            text="",
+            image=theme_icon,
             command=self.switch_theme,
-            fg_color="green",
-            hover_color="#006400",
             height=60,
             width=60
         )
