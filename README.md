@@ -13,4 +13,7 @@ This project is a Pomodoro timer developed using Python's CustomTkinter library.
 * Recording Upon Completion of Pomodoro: Each completed Pomodoro session is recorded with the time and date.
 * Viewing Records: Users can view completed Pomodoro sessions along with their dates and focus times.
 
+## License
+Distributed under the GPL License. See LICENSE.txt for more information.
+
 All icons in this repository are taken from and belong to the site https://uxwing.com
