@@ -49,7 +49,7 @@ class PomodoroApp(ctk.CTk):
                 elif key == "Break Time":
                     self.current_break_time = value
                 elif key == "Pomodoro Cycle":
-                    self.pomodoro_cycle = value
+                    self.pomodoro_cycle = int(value)
                 elif key == "Time Between Pomodoros":
                     self.pomodoro_interval_time = value
 
@@ -232,25 +232,32 @@ class PomodoroApp(ctk.CTk):
         )
         self.session_history_button.grid(row=2, column=1, padx=10, pady=20)
 
-        self.weekly_report_button = ctk.CTkButton(
-            self,
-            text="Weekly Report",
-            command=lambda: self.previous_reports_page("Weekly"),
-            fg_color="#B8860B",
-            height=60
-        )
-        self.weekly_report_button.grid(row=3, column=1, padx=10, pady=20)
+        # self.weekly_report_button = ctk.CTkButton(
+        #     self,
+        #     text="Weekly Report",
+        #     command=lambda: self.previous_reports_page("Weekly"),
+        #     fg_color="#B8860B",
+        #     height=60
+        # )
+        # self.weekly_report_button.grid(row=3, column=1, padx=10, pady=20)
 
-        self.monthly_report_button = ctk.CTkButton(
-            self,
-            text="Monthly Report",
-            command=lambda: self.previous_reports_page("Monthly"),
-            fg_color="#B8860B",
-            height=60
-        )
-        self.monthly_report_button.grid(row=4, column=1, padx=10, pady=20)
+        # self.monthly_report_button = ctk.CTkButton(
+        #     self,
+        #     text="Monthly Report",
+        #     command=lambda: self.previous_reports_page("Monthly"),
+        #     fg_color="#B8860B",
+        #     height=60
+        # )
+        # self.monthly_report_button.grid(row=4, column=1, padx=10, pady=20)
 
-        self.bottom_frame.grid(row=5, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
+        self.invisible_label1 = ctk.CTkLabel(
+            self,
+            text="",
+            height=397,
+        )
+        self.invisible_label1.grid(row=3, column=1, padx=10, pady=20)
+
+        self.bottom_frame.grid(row=4, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
 
     def session_history_page(self):
         for widget in self.winfo_children():
@@ -351,25 +358,32 @@ class PomodoroApp(ctk.CTk):
         )
         self.session_history_go_back_button.grid(row=len(self.records) // 5 + 2, column=1, padx=10, pady=20)
 
-        self.bottom_frame.grid(row=len(self.records) // 5 + 3, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
-
-    def previous_reports_page(self, report_type):
-        for widget in self.winfo_children():
-            if widget != self.bottom_frame:
-                widget.grid_forget()
-                widget.place_forget()
-
-        self.homepage_header_label.grid(row=0, column=1, padx=10, pady=20)
-
-        self.session_history_go_back_button = ctk.CTkButton(
+        self.invisible_label1 = ctk.CTkLabel(
             self,
-            text="Go Back",
-            command=self.analysis_page,
-            fg_color="red",
-            # hover_color="#B8860B",
-            height=60,
+            text="",
+            height=33,
         )
-        self.session_history_go_back_button.grid(row=1, column=1, padx=10, pady=20)
+        self.invisible_label1.grid(row=len(self.records) // 5 + 3, column=1, padx=10, pady=20)
+
+        self.bottom_frame.grid(row=len(self.records) // 5 + 4, column=0, columnspan=3, padx=10, pady=20, sticky="nsew")
+
+    # def previous_reports_page(self, report_type):
+    #     for widget in self.winfo_children():
+    #         if widget != self.bottom_frame:
+    #             widget.grid_forget()
+    #             widget.place_forget()
+
+    #     self.homepage_header_label.grid(row=0, column=1, padx=10, pady=20)
+
+    #     self.session_history_go_back_button = ctk.CTkButton(
+    #         self,
+    #         text="Go Back",
+    #         command=self.analysis_page,
+    #         fg_color="red",
+    #         # hover_color="#B8860B",
+    #         height=60,
+    #     )
+    #     self.session_history_go_back_button.grid(row=1, column=1, padx=10, pady=20)
 
     def settings_page(self):
         for widget in self.winfo_children():
@@ -568,7 +582,7 @@ class PomodoroApp(ctk.CTk):
                 self.current_focus_time_seconds = countdown_time
                 self.timer_id = self.after(1000, countdown)
             else:
-                playsound("sounds/alarm.wav")
+                # playsound("sounds/alarm.wav")
                 if mode == "Focus":
                     self.pomodoro_session_counter += 1
 
@@ -578,16 +592,19 @@ class PomodoroApp(ctk.CTk):
                         date = now.strftime("%d-%m-%Y")
 
                         day = now.strftime("%A")
+                        month = now.strftime("%B")
                         
                         start_time = now.strftime("%H:%M:%S")
                         end_time = (now + timedelta(minutes=int(self.current_focus_time))).strftime("%H:%M:%S")
                         
-                        file.write(f"Date: {date}, Day: {day}, Start Time: {start_time}, End Time: {end_time}, Focus Time (in minutes): {self.current_focus_time}, Break Time (in minutes): {self.current_break_time}, Label: {self.current_label}\n")
+                        file.write(f"Date: {date}, Month: {month}, Day: {day}, Start Time: {start_time}, End Time: {end_time}, Focus Time (in minutes): {self.current_focus_time}, Break Time (in minutes): {self.current_break_time}, Label: {self.current_label}\n")
 
                     if self.pomodoro_session_counter % int(self.pomodoro_interval_time) == 0:
                         self.homepage_header_label.configure(text="Pomodoro Completed!")
                         self.current_break_time = self.pomodoro_interval_time
                         self.pomodoro_cycle += 1
+
+                        self.homepage_header_label.after(3000, lambda: self.homepage_header_label.configure(text="Break"))
 
                     else:
                         self.current_break_time = temp_break_time
